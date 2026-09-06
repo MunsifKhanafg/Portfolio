@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background-color: #05070a;
+}
+
+body {
+  @apply font-body text-slate-200 antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(125, 211, 252, 0.25);
+  color: #fff;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #05070a;
+}
+::-webkit-scrollbar-thumb {
+  background: #1a1f2b;
+  border-radius: 999px;
+  border: 2px solid #05070a;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #252b3a;
+}
+
+/* Glass panel utility */
+.glass {
+  background: rgba(18, 22, 30, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-hover {
+  transition: border-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+}
+.glass-hover:hover {
+  border-color: rgba(125, 211, 252, 0.35);
+  transform: translateY(-4px);
+}
+
+.text-gradient {
+  background: linear-gradient(120deg, #7dd3fc, #a78bfa 60%, #34d399);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.section-heading {
+  @apply font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white;
+}
+
+.section-eyebrow {
+  @apply font-mono text-xs sm:text-sm uppercase tracking-[0.25em] text-accent/80;
+}
+
+/* Custom cursor (desktop only) */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background: #7dd3fc;
+}
+.cursor-ring {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(125, 211, 252, 0.5);
+  transition: width 0.2s ease, height 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.cursor-ring.hovering {
+  width: 54px;
+  height: 54px;
+  background: rgba(125, 211, 252, 0.08);
+  border-color: rgba(167, 139, 250, 0.6);
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring {
+    display: none;
+  }
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
