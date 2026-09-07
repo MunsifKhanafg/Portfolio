@@ -46,9 +46,10 @@ export const bento = {
 }
 
 // ── Projects ────────────────────────────────────────────────────────────
-// Add a new project by copying an existing object below. `image` is
-// optional — leave it out (or empty string) to use the generated
-// gradient placeholder card instead of a screenshot.
+// Add a new project by copying an existing object below. `images` is an
+// array — 1 photo just displays normally, 2+ auto-rotate with a crossfade
+// on the card. Leave it empty to use the generated gradient placeholder
+// card instead of screenshots.
 export const projects = [
   {
     id: 'aurum-dining',
@@ -60,7 +61,16 @@ export const projects = [
     tags: ['React', 'Node.js', 'Express', 'MongoDB', 'Socket.io', 'Redux'],
     github: '',
     live: 'https://restaurant-frontend-five-psi.vercel.app/',
-    image: '',
+    images: [
+      '/projects/aurum-dining-1.PNG',
+      '/projects/aurum-dining-2.PNG',
+      '/projects/aurum-dining-3.PNG',
+      '/projects/aurum-dining-4.PNG',
+      '/projects/aurum-dining-5.PNG',
+      '/projects/aurum-dining-7.PNG',
+      '/projects/aurum-dining-8.PNG',
+      '/projects/aurum-dining-9.PNG',
+    ],
     featured: true,
   },
   {
@@ -73,7 +83,12 @@ export const projects = [
     tags: ['React', 'Node.js', 'MongoDB', 'Tailwind CSS'],
     github: '',
     live: 'https://smart-appointment-booking.vercel.app/',
-    image: '',
+    images: [
+      '/projects/smart-appointment-booking-1.PNG',
+      '/projects/smart-appointment-booking-2.PNG',
+      '/projects/smart-appointment-booking-3.PNG',
+      '/projects/smart-appointment-booking-4.PNG',
+    ],
     featured: true,
   },
   {
@@ -86,7 +101,13 @@ export const projects = [
     tags: ['React', 'JavaScript', 'Tailwind CSS'],
     github: 'https://github.com/MunsifKhanafg/service-booking-app',
     live: 'https://munsifkhanafg.github.io/service-booking-app/',
-    image: '',
+    images: [
+      '/projects/service-booking-app-1.PNG',
+      '/projects/service-booking-app-2.PNG',
+      '/projects/service-booking-app-3.PNG',
+      '/projects/service-booking-app-4.PNG',
+      '/projects/service-booking-app-5.PNG',
+    ],
     featured: false,
   },
   {
@@ -99,13 +120,20 @@ export const projects = [
     tags: ['React', 'JavaScript', 'Tailwind CSS'],
     github: 'https://github.com/MunsifKhanafg/property-rental-dashboard',
     live: 'https://munsifkhanafg.github.io/property-rental-dashboard/',
-    image: '',
+    images: [
+      '/projects/property-rental-dashboard-1.PNG',
+      '/projects/property-rental-dashboard-2.PNG',
+      '/projects/property-rental-dashboard-3.PNG',
+    ],
     featured: false,
   },
 ]
 
 // ── Experience & Education Timeline ────────────────────────────────────
 // type: 'education' | 'experience' | 'milestone'
+// `image` is optional — a logo for the institution/company. Drop a file into
+// /public/logos (e.g. /public/logos/college.png) and reference it here, e.g.
+// image: '/logos/college.png'. Leave it '' to keep the default icon badge.
 export const timeline = [
   {
     id: 'bscs',
@@ -115,6 +143,7 @@ export const timeline = [
     period: '2023 — 2027',
     description:
       'Currently in 7th semester. Coursework spans software engineering, mobile development, computer organization, and human-computer interaction.',
+    image: '',
   },
   {
     id: 'digiskills',
@@ -124,6 +153,7 @@ export const timeline = [
     period: 'Online',
     description:
       'Completed structured courses covering frontend development, the full MERN stack, mobile app development, and game development fundamentals.',
+    image: '',
   },
   {
     id: 'devbzam',
@@ -133,6 +163,7 @@ export const timeline = [
     period: '',
     description:
       'Hands-on experience applying full-stack development skills in a real team/production setting.',
+    image: '',
   },
 ]
 

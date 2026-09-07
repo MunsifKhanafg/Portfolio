@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { FiGithub, FiExternalLink, FiArrowUpRight } from 'react-icons/fi'
 import { projects } from '../data/portfolioData.js'
 import SectionHeading from './SectionHeading.jsx'
@@ -17,6 +18,66 @@ function gradientFor(id) {
   return GRADIENTS[hash % GRADIENTS.length]
 }
 
+const ROTATE_INTERVAL = 3200 // ms between screenshot crossfades
+
+// Cover image for a project card. Cycles through project.images with a
+// crossfade when there's more than one. Any image that fails to load
+// (e.g. a placeholder path before the real file is added) is dropped from
+// rotation; if none load, it falls back to the initials gradient card.
+function ProjectCover({ project }) {
+  const sources = project.images ?? []
+  const [failed, setFailed] = useState(() => new Set())
+  const [index, setIndex] = useState(0)
+
+  const validSources = sources.filter((_, i) => !failed.has(i))
+
+  useEffect(() => {
+    if (validSources.length < 2) return
+    const id = setInterval(() => {
+      setIndex((i) => (i + 1) % validSources.length)
+    }, ROTATE_INTERVAL)
+    return () => clearInterval(id)
+  }, [validSources.length])
+
+  const markFailed = (i) => setFailed((prev) => new Set(prev).add(i))
+
+  if (validSources.length === 0) {
+    return (
+      <div className="flex h-full w-full items-center justify-center transition-transform duration-700 ease-out group-hover:scale-110">
+        <span className="font-display text-5xl font-bold text-white/10 select-none">
+          {project.name
+            .split(' ')
+            .map((w) => w[0])
+            .join('')
+            .slice(0, 3)}
+        </span>
+        {/* Hidden probes — pick up a screenshot the moment it's added without a refresh. */}
+        {sources.map((src, i) => (
+          <img key={src} src={src} alt="" className="hidden" onError={() => markFailed(i)} />
+        ))}
+      </div>
+    )
+  }
+
+  const safeIndex = index % validSources.length
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.img
+        key={validSources[safeIndex]}
+        src={validSources[safeIndex]}
+        alt={project.name}
+        onError={() => markFailed(sources.indexOf(validSources[safeIndex]))}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
+        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+      />
+    </AnimatePresence>
+  )
+}
+
 function ProjectCard({ project, index, large }) {
   return (
     <motion.article
@@ -33,25 +94,10 @@ function ProjectCard({ project, index, large }) {
           large ? 'sm:h-64' : ''
         }`}
       >
-        {project.image ? (
-          <img
-            src={project.image}
-            alt={project.name}
-            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center transition-transform duration-700 ease-out group-hover:scale-110">
-            <span className="font-display text-5xl font-bold text-white/10 select-none">
-              {project.name
-                .split(' ')
-                .map((w) => w[0])
-                .join('')
-                .slice(0, 3)}
-            </span>
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-base-950/90 via-base-950/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-        <p className="absolute bottom-4 left-5 right-5 translate-y-3 text-sm text-slate-200 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+        <ProjectCover project={project} />
+
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-base-950/90 via-base-950/10 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <p className="pointer-events-none absolute bottom-4 left-5 right-5 translate-y-3 text-sm text-slate-200 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
           {project.longDescription}
         </p>
         {project.featured && (

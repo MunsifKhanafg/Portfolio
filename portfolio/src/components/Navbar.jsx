@@ -38,19 +38,35 @@ export default function Navbar() {
     return () => observer.disconnect()
   }, [])
 
+  // Lock body scroll while the mobile menu is open — prevents the page
+  // scrolling behind the overlay and any touch/scroll interference on
+  // real mobile browsers.
+  useEffect(() => {
+    if (open) {
+      const prev = document.body.style.overflow
+      document.body.style.overflow = 'hidden'
+      return () => {
+        document.body.style.overflow = prev
+      }
+    }
+  }, [open])
+
   const handleNav = (id) => {
     setOpen(false)
-    scrollToId(id)
+    // Let the menu-close state flush before scrolling, so the layout is
+    // back to normal (body scroll unlocked) when we calculate positions.
+    requestAnimationFrame(() => scrollToId(id))
   }
 
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-500 ${
-        scrolled ? 'glass shadow-glass py-3' : 'bg-transparent py-5'
+        scrolled || open ? 'glass shadow-glass py-3' : 'bg-transparent py-5'
       }`}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 sm:px-8">
+      <nav className="relative z-[110] mx-auto flex max-w-6xl items-center justify-between px-5 sm:px-8">
         <button
+          type="button"
           onClick={() => handleNav('home')}
           className="cursor-hover font-display text-lg font-bold tracking-tight text-white"
         >
@@ -62,6 +78,7 @@ export default function Navbar() {
           {LINKS.map((link) => (
             <li key={link.id}>
               <button
+                type="button"
                 onClick={() => handleNav(link.id)}
                 className={`cursor-hover relative px-4 py-2 text-sm font-medium rounded-full transition-colors ${
                   active === link.id ? 'text-white' : 'text-slate-400 hover:text-white'
@@ -82,6 +99,7 @@ export default function Navbar() {
 
         <div className="hidden md:block">
           <button
+            type="button"
             onClick={() => handleNav('contact')}
             className="cursor-hover group inline-flex items-center gap-1.5 rounded-full bg-white px-4 py-2 text-sm font-semibold text-base-950 transition-transform hover:-translate-y-0.5"
           >
@@ -91,37 +109,56 @@ export default function Navbar() {
         </div>
 
         <button
+          type="button"
           onClick={() => setOpen((o) => !o)}
-          className="cursor-hover md:hidden text-white text-2xl"
+          className="cursor-hover relative z-[120] flex h-10 w-10 items-center justify-center text-2xl text-white md:hidden"
           aria-label="Toggle menu"
+          aria-expanded={open}
         >
           {open ? <FiX /> : <FiMenu />}
         </button>
       </nav>
 
+      {/* Full-screen mobile overlay — more reliable on real devices than a
+          small anchored dropdown, and impossible for other fixed elements
+          to render on top of. */}
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden glass mx-4 mt-3 rounded-2xl"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 z-[100] bg-base-950/98 backdrop-blur-xl md:hidden"
           >
-            <ul className="flex flex-col p-3">
-              {LINKS.map((link) => (
-                <li key={link.id}>
-                  <button
-                    onClick={() => handleNav(link.id)}
-                    className={`w-full text-left px-4 py-3 rounded-xl text-sm font-medium transition-colors ${
-                      active === link.id ? 'bg-white/10 text-white' : 'text-slate-400'
-                    }`}
-                  >
-                    {link.label}
-                  </button>
-                </li>
+            <div className="flex h-full flex-col items-center justify-center gap-2 px-6">
+              {LINKS.map((link, i) => (
+                <motion.button
+                  key={link.id}
+                  type="button"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.05 + i * 0.06, duration: 0.35 }}
+                  onClick={() => handleNav(link.id)}
+                  className={`cursor-hover w-full max-w-xs rounded-2xl px-6 py-4 text-center text-xl font-display font-semibold transition-colors ${
+                    active === link.id ? 'bg-white/10 text-white' : 'text-slate-300'
+                  }`}
+                >
+                  {link.label}
+                </motion.button>
               ))}
-            </ul>
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 + LINKS.length * 0.06, duration: 0.35 }}
+                onClick={() => handleNav('contact')}
+                className="cursor-hover mt-4 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-base-950"
+              >
+                Let's talk
+                <FiArrowUpRight />
+              </motion.button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

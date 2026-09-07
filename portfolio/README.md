@@ -96,9 +96,12 @@ Copy an existing object inside the `projects` array and fill in your own values:
   tags: ['React', 'Node.js', 'MongoDB'],
   github: 'https://github.com/you/repo', // leave as '' to hide the GitHub icon
   live: 'https://your-live-demo.com',    // leave as '' to hide the live-demo icon/link
-  image: '',                             // leave empty to use the generated gradient card,
-                                          // or put a path like '/projects/my-project.png'
-                                          // (place the image file in /public/projects/)
+  images: ['/projects/my-project-1.png', '/projects/my-project-2.png'],
+                                          // an array — place the matching image files in
+                                          // /public/projects/. One image just displays;
+                                          // two or more auto-rotate with a crossfade on
+                                          // the card. Leave the array empty ([]) to fall
+                                          // back to a generated gradient card.
   featured: true,                        // featured projects render as a larger card
 }
 ```
@@ -119,6 +122,11 @@ Add an object to the `timeline` array:
   org: 'Company Name',
   period: 'Jun 2026 — Aug 2026',
   description: 'One or two sentences about what you did there.',
+  image: '',                // optional — a logo for the institution/company.
+                             // Drop a file into /public/logos (e.g.
+                             // /public/logos/college.png) and set this to
+                             // '/logos/college.png'. Leave '' for the default
+                             // icon badge.
 }
 ```
 
