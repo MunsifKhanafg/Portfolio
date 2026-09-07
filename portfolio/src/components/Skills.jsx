@@ -17,6 +17,7 @@ import {
   SiJenkins,
   SiKubernetes,
   SiVercel,
+  SiFlutter,
 } from 'react-icons/si'
 import { FiCode, FiLayers, FiDatabase, FiTool } from 'react-icons/fi'
 import { skills } from '../data/portfolioData.js'
@@ -41,6 +42,7 @@ const ICON_MAP = {
   Kubernetes: SiKubernetes,
   'CI/CD': FiTool,
   Vercel: SiVercel,
+  Flutter: SiFlutter,
 }
 
 const CATEGORY_ICONS = {

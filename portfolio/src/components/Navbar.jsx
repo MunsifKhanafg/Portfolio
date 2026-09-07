@@ -1,16 +1,19 @@
 import { useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { FiMenu, FiX, FiArrowUpRight } from 'react-icons/fi'
-import { profile } from '../data/portfolioData.js'
+import { FiMenu, FiX, FiArrowUpRight, FiGithub, FiLinkedin, FiMail, FiPhone } from 'react-icons/fi'
+import { profile, socials } from '../data/portfolioData.js'
 import { scrollToId } from '../lib/scroll.js'
 
 const LINKS = [
+  { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'projects', label: 'Projects' },
   { id: 'experience', label: 'Experience' },
   { id: 'skills', label: 'Skills' },
   { id: 'contact', label: 'Contact' },
 ]
+
+const SOCIAL_ICONS = { github: FiGithub, linkedin: FiLinkedin, mail: FiMail, phone: FiPhone }
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -38,9 +41,7 @@ export default function Navbar() {
     return () => observer.disconnect()
   }, [])
 
-  // Lock body scroll while the mobile menu is open — prevents the page
-  // scrolling behind the overlay and any touch/scroll interference on
-  // real mobile browsers.
+  // Lock body scroll while the mobile menu is open.
   useEffect(() => {
     if (open) {
       const prev = document.body.style.overflow
@@ -51,12 +52,23 @@ export default function Navbar() {
     }
   }, [open])
 
+  // Close automatically if the viewport is resized past the mobile breakpoint
+  // (e.g. rotating a tablet to landscape).
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 768px)')
+    const onChange = (e) => {
+      if (e.matches) setOpen(false)
+    }
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
+
   const handleNav = (id) => {
     setOpen(false)
-    // Let the menu-close state flush before scrolling, so the layout is
-    // back to normal (body scroll unlocked) when we calculate positions.
     requestAnimationFrame(() => scrollToId(id))
   }
+
+  const desktopLinks = LINKS.filter((l) => l.id !== 'home')
 
   return (
     <header
@@ -75,7 +87,7 @@ export default function Navbar() {
         </button>
 
         <ul className="hidden md:flex items-center gap-1">
-          {LINKS.map((link) => (
+          {desktopLinks.map((link) => (
             <li key={link.id}>
               <button
                 type="button"
@@ -111,53 +123,111 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
-          className="cursor-hover relative z-[120] flex h-10 w-10 items-center justify-center text-2xl text-white md:hidden"
+          className="cursor-hover relative z-[120] flex h-11 w-11 items-center justify-center rounded-full text-2xl text-white transition-colors md:hidden"
           aria-label="Toggle menu"
           aria-expanded={open}
         >
-          {open ? <FiX /> : <FiMenu />}
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={open ? 'close' : 'menu'}
+              initial={{ opacity: 0, rotate: -45 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 45 }}
+              transition={{ duration: 0.2 }}
+              className="flex"
+            >
+              {open ? <FiX /> : <FiMenu />}
+            </motion.span>
+          </AnimatePresence>
         </button>
       </nav>
 
-      {/* Full-screen mobile overlay — more reliable on real devices than a
-          small anchored dropdown, and impossible for other fixed elements
-          to render on top of. */}
+      {/* Full-screen mobile overlay */}
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 z-[100] bg-base-950/98 backdrop-blur-xl md:hidden"
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] overflow-y-auto bg-base-950/[0.98] backdrop-blur-2xl md:hidden"
           >
-            <div className="flex h-full flex-col items-center justify-center gap-2 px-6">
-              {LINKS.map((link, i) => (
-                <motion.button
-                  key={link.id}
-                  type="button"
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 + i * 0.06, duration: 0.35 }}
-                  onClick={() => handleNav(link.id)}
-                  className={`cursor-hover w-full max-w-xs rounded-2xl px-6 py-4 text-center text-xl font-display font-semibold transition-colors ${
-                    active === link.id ? 'bg-white/10 text-white' : 'text-slate-300'
-                  }`}
-                >
-                  {link.label}
-                </motion.button>
-              ))}
-              <motion.button
-                type="button"
+            {/* Decorative glow, matching the hero */}
+            <div className="pointer-events-none absolute -top-24 -right-16 h-72 w-72 rounded-full bg-accent/15 blur-[110px]" />
+            <div className="pointer-events-none absolute bottom-0 -left-16 h-72 w-72 rounded-full bg-accent-violet/15 blur-[110px]" />
+            <div className="pointer-events-none absolute inset-0 bg-grid-pattern bg-[size:36px_36px] opacity-[0.25]" />
+
+            <div className="relative flex min-h-full flex-col px-7 pt-24 pb-10">
+              <nav className="flex flex-1 flex-col justify-center gap-1">
+                {LINKS.map((link, i) => (
+                  <motion.button
+                    key={link.id}
+                    type="button"
+                    initial={{ opacity: 0, x: -24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -24 }}
+                    transition={{ delay: 0.06 + i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    onClick={() => handleNav(link.id)}
+                    className="cursor-hover group flex w-full items-center gap-4 border-b border-white/5 py-4 text-left last:border-none"
+                  >
+                    <span
+                      className={`font-mono text-xs tabular-nums transition-colors ${
+                        active === link.id ? 'text-accent' : 'text-slate-600'
+                      }`}
+                    >
+                      0{i + 1}
+                    </span>
+                    <span
+                      className={`font-display text-3xl font-semibold tracking-tight transition-colors ${
+                        active === link.id ? 'text-white' : 'text-slate-400 group-active:text-white'
+                      }`}
+                    >
+                      {link.label}
+                    </span>
+                    <FiArrowUpRight
+                      className={`ml-auto text-xl transition-all ${
+                        active === link.id
+                          ? 'translate-x-0 opacity-100 text-accent'
+                          : '-translate-x-1 opacity-0 group-active:translate-x-0 group-active:opacity-100'
+                      }`}
+                    />
+                  </motion.button>
+                ))}
+              </nav>
+
+              <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 + LINKS.length * 0.06, duration: 0.35 }}
-                onClick={() => handleNav('contact')}
-                className="cursor-hover mt-4 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-base-950"
+                exit={{ opacity: 0, y: 16 }}
+                transition={{ delay: 0.06 + LINKS.length * 0.06, duration: 0.4 }}
+                className="flex items-center justify-between gap-4 border-t border-white/5 pt-6"
               >
-                Let's talk
-                <FiArrowUpRight />
-              </motion.button>
+                <div className="flex items-center gap-3">
+                  {socials.map((s) => {
+                    const Icon = SOCIAL_ICONS[s.icon] ?? FiArrowUpRight
+                    return (
+                      <a
+                        key={s.label}
+                        href={s.url}
+                        target={s.url.startsWith('http') ? '_blank' : undefined}
+                        rel="noreferrer"
+                        aria-label={s.label}
+                        className="cursor-hover flex h-11 w-11 items-center justify-center rounded-full bg-white/5 text-slate-300"
+                      >
+                        <Icon size={17} />
+                      </a>
+                    )
+                  })}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleNav('contact')}
+                  className="cursor-hover inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-base-950"
+                >
+                  Let's talk
+                  <FiArrowUpRight />
+                </button>
+              </motion.div>
             </div>
           </motion.div>
         )}

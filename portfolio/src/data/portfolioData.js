@@ -36,7 +36,7 @@ export const socials = [
 // ── Bento grid content for the About section ──────────────────────────────
 export const bento = {
   stack: ['React', 'Node.js', 'Express', 'MongoDB', 'Redux Toolkit', 'Tailwind CSS', 'Socket.io'],
-  currentlyLearning: ['Mobile App Development', 'Game Development', 'System Design'],
+  currentlyLearning: ['Flutter', 'Mobile App Development', 'Game Development', 'System Design'],
   stats: [
     { label: 'Semester', value: '7th / 8' },
     { label: 'Program', value: 'BS CS' },
@@ -170,7 +170,7 @@ export const timeline = [
 // ── Skills matrix ──────────────────────────────────────────────────────
 export const skills = {
   Languages: ['JavaScript', 'HTML5', 'CSS3', 'SQL'],
-  'Frameworks & Libraries': ['React', 'Redux Toolkit', 'Node.js', 'Express', 'Tailwind CSS'],
+  'Frameworks & Libraries': ['React', 'Redux Toolkit', 'Node.js', 'Express', 'Tailwind CSS', 'Flutter'],
   Databases: ['MongoDB'],
   'Tools & Platforms': ['Git', 'GitHub', 'Socket.io', 'Docker', 'Jenkins', 'Kubernetes', 'CI/CD', 'Vercel'],
 }
